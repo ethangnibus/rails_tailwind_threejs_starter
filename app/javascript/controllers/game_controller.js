@@ -8,39 +8,15 @@ import { throttle } from 'lodash-es';
 // Connects to data-controller="game"
 export default class extends Controller {
   connect() {
-    this.initScene();
-    this.initCamera();
-    this.initRenderer();
-    this.initResizeHandler();
-
-
-    this.geometry = new THREE.BoxGeometry();
-
+    this.initThree();
     this.initMaterials();
-    this.directionalLight = new THREE.DirectionalLight("#ffffff", 2.0);
-    this.directionalLight.position.set(0.5, 1, 0.2);
+    this.init3dSubspace(10);
+    this.initVectors();
+    // this.initResizeHandler();
 
-    this.scene.add(this.directionalLight);
-    this.scene.background = new THREE.Color("#87CEEB");
+    // this.geometry = new THREE.BoxGeometry();
 
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-    console.log("hello world", this.renderer.domElement);
-    // this.createTerrain();
-
-
-    const material = new THREE.LineBasicMaterial( { color: 0x0000ff } );
-    const points = [];
-    points.push( new THREE.Vector3( - 10, 0, 0 ) );
-    points.push( new THREE.Vector3( 10, 0, 0 ) );
-
-
-    const geometry = new THREE.BufferGeometry().setFromPoints( points );
-    const line = new THREE.Line( geometry, material );
-    this.scene.add( line );
-
-
-
-    this.scene.add(this.createCube(0, 0, 0, this.redMaterial));
+    // this.scene.add(this.createCube(0, 0, 0, this.redMaterial));
     this.animate();
     // Handle window resizing
   }
@@ -51,38 +27,232 @@ export default class extends Controller {
     this.renderer.render(this.scene, this.camera);
   }
 
-  initScene() {
+  initThree() {
     this.scene = new THREE.Scene();
-  }
-  initCamera() {
-    this.camera = new THREE.PerspectiveCamera(
-      75,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000
-    );
-    this.camera.position.set(3, 3, 3);
-  }
-  initRenderer() {
+    this.camera = new THREE.PerspectiveCamera(75, this.element.clientWidth / this.element.clientHeight, 0.1, 1000);
+    this.camera.position.set(3, 3, 2);
+    const upDirection = new THREE.Vector3(0, 0, 1);
+    this.camera.up.copy(upDirection);
     this.renderer = new THREE.WebGLRenderer({
+      canvas: this.element,
       antialias: true
     });
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(this.renderer.domElement);
+    this.renderer.setSize(this.element.clientWidth, this.element.clientHeight);
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
   }
   initResizeHandler() {
     const resizeUpdateInterval = 16; // 60 fps!
     const resizeHandler = throttle(() => {
-      const newWidth = window.innerWidth;
-      const newHeight = window.innerHeight;
-      this.renderer.setSize(newWidth, newHeight);
-      this.camera.aspect = newWidth / newHeight;
+      this.nWidth = window.innerWidth;
+      this.nHeight = window.innerHeight;
+      console.log(`New Width: ${this.nWidth}, New Height: ${this.nHeight}`);
+      this.renderer.setSize(this.nWidth, this.nHeight);
+      this.camera.aspect = this.nWidth / this.nHeight;
       this.camera.updateProjectionMatrix();
     }, resizeUpdateInterval, { trailing: true });
     window.addEventListener('resize', resizeHandler);
   }
+  init3dSubspace(radius) {
+    this.scene.background = new THREE.Color("#000000");
+    // this.directionalLight = new THREE.DirectionalLight("#FF0000", 5.0);
+    //this.directionalLight.position.set(0, 0, 0);
+
+    this.orangeLight = new THREE.PointLight( 0xFF000, 100, 100 );
+    this.orangeLight.position.set( 0, 0, 5 );
+    this.scene.add(this.orangeLight);
+
+    this.purpleLight = new THREE.PointLight( 0x00FF00, 100, 100 );
+    this.purpleLight.position.set( 0, 5, 0 );
+    this.scene.add(this.purpleLight);
+
+    this.yellowLight = new THREE.PointLight( 0x0000FF, 100, 100 );
+    this.yellowLight.position.set( 5, 0, 0 );
+    this.scene.add(this.yellowLight);
+
+    this.makeAxis(radius);
+    // this.makeXOrthogonalPlane(radius);
+    // this.makeYOrthogonalPlane(radius);
+    this.makeZOrthogonalPlane(radius);
+    // this.makeHyperplane(radius);
+  }
+
+  makeAxis(radius) {
+    // X-axis = red
+    const start = new THREE.Vector3( -radius, 0, 0);
+    const end = new THREE.Vector3( radius, 0, 0);
+    this.makeLine(this.xAxisMaterial, start, end);
+    // Y-axis = green
+    start.set(0, -radius, 0);
+    end.set(0, radius, 0);
+    this.makeLine(this.yAxisMaterial, start, end);
+    // Z-axis = red
+    start.set(0, 0, -radius);
+    end.set(0, 0, radius);
+    this.makeLine(this.zAxisMaterial, start, end);
+  }
+
+  makeXOrthogonalPlane(radius) {
+    const start = new THREE.Vector3( 0, 0, 0);
+    const end = new THREE.Vector3( 0, 0, 0);
+    for (let i = -radius; i <= radius; i++) {
+      if (i==0) continue;
+      start.set(0, i, -radius);
+      end.set(0, i, radius);
+      this.makeLine(this.planeLineMaterial, start, end);
+      start.set(0, -radius, i);
+      end.set(0, radius, i);
+      this.makeLine(this.planeLineMaterial, start, end);
+    }
+  }
+
+  makeYOrthogonalPlane(radius) {
+    const start = new THREE.Vector3( 0, 0, 0);
+    const end = new THREE.Vector3( 0, 0, 0);
+    for (let i = -radius; i <= radius; i++) {
+      if (i==0) continue;
+      start.set(-radius, 0, i);
+      end.set(radius, 0, i);
+      this.makeLine(this.planeLineMaterial, start, end);
+      start.set(i, 0, -radius);
+      end.set(i, 0, radius);
+      this.makeLine(this.planeLineMaterial, start, end);
+    }
+  }
+
+  makeZOrthogonalPlane(radius) {
+    const start = new THREE.Vector3( 0, 0, 0);
+    const end = new THREE.Vector3( 0, 0, 0);
+    for (let i = -radius; i <= radius; i++) {
+      if (i==0) continue;
+      start.set(-radius, i, 0);
+      end.set(radius, i, 0);
+      this.makeLine(this.hyperplaneLineMaterial, start, end);
+      start.set(i, -radius, 0);
+      end.set(i, radius, 0);
+      this.makeLine(this.planeLineMaterial, start, end);
+    }
+  }
+
+  makeHyperplane(radius) {
+    const start = new THREE.Vector3( 0, 0, 0);
+    const end = new THREE.Vector3( 0, 0, 0);
+    for (let i = -radius; i <= radius; i++) {
+      for (let j = -radius; j <= radius; j++) {
+        if (i==0 && j==0) continue;
+        start.set(-radius, i, j);
+        end.set(radius, i, j);
+        this.makeLine(this.hyperplaneLineMaterial, start, end);
+        start.set(i, -radius, j);
+        end.set(i, radius, j);
+        this.makeLine(this.hyperplaneLineMaterial, start, end);
+        start.set(i, j, -radius);
+        end.set(i, j, radius);
+        this.makeLine(this.hyperplaneLineMaterial, start, end);
+      }
+    }
+  }
+  makeLine(material, start, end) {
+    const points = [];
+    points.push( start );
+    points.push( end );
+    const geometry = new THREE.BufferGeometry().setFromPoints( points );
+    const line = new THREE.Line( geometry, material );
+    this.scene.add( line );
+    return line
+  }
+  makeSphere(material, position) {
+    // Create a sphere geometry
+    const geometry = new THREE.SphereGeometry(0.1, 10, 10);
+    // Create a mesh by combining the geometry and material
+    const sphere = new THREE.Mesh(geometry, material);
+    sphere.position.set(position.x, position.y, position.z);
+    // Add the sphere to the scene
+    this.scene.add(sphere);
+    return sphere
+  }
+
+  initVectors() {
+    const start = new THREE.Vector3( 0, 0, 0);
+    const end = new THREE.Vector3( -1, 1, 1);
+    // Add event listeners to the sliders for X, Y, and Z
+    this.uLine = this.makeLine(this.uMaterial, start, end);
+    this.uSphere = this.makeSphere(this.uMaterial, end);
+    this.alpha = 1.5
+    end.multiplyScalar(this.alpha);
+    this.uAlphaLine = this.makeLine(this.uAlphaMaterial, start, end);
+    this.uAlphaSphere = this.makeSphere(this.uAlphaMaterial, end);
+
+
+    console.log("uLine", this.uLine);
+    this.initSlider("x-slider", "x");
+    this.initSlider("y-slider", "y");
+    this.initSlider("z-slider", "z");
+    this.initSlider("alpha-slider", "alpha");
+  }
+  initSlider(sliderId, component) {
+    const slider = document.getElementById(sliderId);
+    slider.addEventListener("input", (event) => this.handleSliderChange(event, component));
+  }
+  handleSliderChange(event, component) {
+    const sliderValue = parseFloat(event.target.value);
+    const oldPositions = this.uLine.geometry.attributes.position.array
+    let x = oldPositions[3]
+    let y = oldPositions[4]
+    let z = oldPositions[5]
+
+    // Update the specific component (x, y, or z) based on the slider value
+    if (component === "x") {
+      x = (sliderValue  / 50.0) - 1.0;
+    } else if (component === "y") {
+      y = (sliderValue  / 50.0) - 1.0;
+    } else if (component === "z") {
+      z = (sliderValue  / 50.0) - 1.0;
+    } else if (component === "alpha") {
+      this.alpha = (sliderValue / 12.5) - 4.0;
+    }
+
+    // Set the new position of the end point for uLine
+    this.uLine.geometry.attributes.position.setXYZ(1, x, y, z);
+    this.uLine.geometry.attributes.position.needsUpdate = true;
+    this.uSphere.position.set(x, y, z);
+
+    // Set the new position of the end point for uAlphaLine
+    x *= this.alpha
+    y *= this.alpha
+    z *= this.alpha
+    this.uAlphaLine.geometry.attributes.position.setXYZ(1, x, y, z);
+    this.uAlphaLine.geometry.attributes.position.needsUpdate = true;
+    this.uAlphaSphere.position.set(x, y, z);
+  }
 
   initMaterials() {
+    // Axis Lines
+    this.xAxisMaterial = new THREE.LineBasicMaterial( {
+      color: "#FF0000",
+      transparent: true,
+      opacity: 0.8,
+    } );
+    this.yAxisMaterial = new THREE.LineBasicMaterial( {
+      color: "#00FF00",
+      transparent: true,
+      opacity: 0.8,
+    } );
+    this.zAxisMaterial = new THREE.LineBasicMaterial( {
+      color: "#0000FF",
+      transparent: true,
+      opacity: 0.8,
+    } );
+    this.planeLineMaterial = new THREE.LineBasicMaterial( {
+      color: "#808080",
+      transparent: true,
+      opacity: 0.4,
+    } );
+    this.hyperplaneLineMaterial = new THREE.LineBasicMaterial( {
+      color: "#808080",
+      transparent: true,
+      opacity: 0.3,
+    } );
+
     this.grassMaterial = new THREE.MeshStandardMaterial({
       color: "#348c31",
       wireframe: false,
@@ -97,14 +267,14 @@ export default class extends Controller {
       flatShading: false,
       emissiveIntensity: 0.5,
     });
-    this.stoneMaterial = new THREE.MeshStandardMaterial({
+    this.uMaterial = new THREE.MeshStandardMaterial({
       color: "#777777",
       wireframe: false,
       emissive: "#777777",
       flatShading: false,
       emissiveIntensity: 0.5,
     });
-    this.trunkMaterial = new THREE.MeshStandardMaterial({
+    this.uAlphaMaterial = new THREE.MeshStandardMaterial({
       color: "#9b7653",
       wireframe: false,
       emissive: "#9b7653",
@@ -139,93 +309,5 @@ export default class extends Controller {
     return cube;
   }
 
-  createTerrain() {
-    const terrain = new THREE.Group();
-    const frequency = 0.005;
-    const amplitude = 50;
-    const height = amplitude * 2;
-    const width = 50;
-    const noise2D = makeNoise2D(this.seed);
-    const noise3D = makeNoise3D(this.seed);
-
-    let prng = seedrandom(this.seed);
-
-    for (let x = 0; x < width; x++) {
-      for (let y = 0; y < height; y++) {
-        for (let z = 0; z < width; z++) {
-          let value = noise2D(x * frequency, z * frequency) * amplitude;
-          value = y - value;
-          if (value < 20) {
-            const cube = this.createCube(x, y, z, this.stoneMaterial);
-            terrain.add(cube);
-          } else if (value < 23) {
-            const cube = this.createCube(x, y, z, this.dirtMaterial);
-            terrain.add(cube);
-          } else if (value < 25) {
-            const cube = this.createCube(x, y, z, this.grassMaterial);
-            terrain.add(cube);
-            if (prng.quick() > 0.99) {
-              const tree = this.createTreeFromRoot(x, y, z);
-              terrain.add(tree);
-            }
-          }
-        }
-      }
-    }
-
-    const tunneledTerrain = this.createTunnel(
-      width,
-      height,
-      width,
-      frequency,
-      amplitude,
-      terrain
-    );
-
-    this.scene.add(tunneledTerrain);
-  }
-
-  createTreeFromRoot(x, y, z) {
-    const tree = new THREE.Group();
-
-    for (let i = 1; i < 4; i++) {
-      const cube = this.createCube(x, y + i, z, this.trunkMaterial);
-      tree.add(cube);
-    }
-    for (let i = -1; i < 2; i++) {
-      for (let j = -1; j < 2; j++) {
-        for (let k = -1; k < 2; k++) {
-          const cube = this.createCube(
-            x + i,
-            y + 4,
-            z + j,
-            this.leavesMaterial
-          );
-          tree.add(cube);
-        }
-      }
-    }
-    return tree;
-  }
-  createTunnel(width, height, depth, frequency, amplitude, terrain) {
-    const noise3D = makeNoise3D(this.seed);
-
-    for (let i = 0; i < width - 3; i++) {
-      for (let j = 3; j < amplitude; j++) {
-        for (let k = 0; k < depth - 3; k++) {
-          let value =
-            noise3D(i * frequency, j * frequency, k * frequency) * amplitude;
-
-          if (value > 5 && value < 7) {
-            const cube = terrain.getObjectByName(`${i}-${j}-${k}`);
-
-            if (cube) {
-              terrain.remove(cube);
-            }
-          }
-        }
-      }
-    }
-    return terrain;
-  }
+  
 }
