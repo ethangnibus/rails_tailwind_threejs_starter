@@ -49,11 +49,11 @@
     <canvas class="sm:w-2/3 grow" data-controller="game"></canvas>
   </div>
 </div> %>
-<div class="flex flex-col h-screen w-screen bg-red-500">
-  <div class="h-20 pt-4 px-4 sticky top-0 bg-neutral-950">
-    <div class="p-2 h-full w-full rounded-lg bg-neutral-800">
-      <div class="p-2 h-full w-full flex flex-row rounded-lg bg-neutral-700">
-        <div class="h-full">
+<div class="flex flex-col h-screen w-screen">
+  <div class="h-20 sm:pt-4 sm:px-4 pt-1 px-1 sticky top-0 bg-neutral-950">
+    <div class="sm:p-2 p-1 h-full w-full rounded-lg bg-neutral-800">
+      <div class="sm:p-2 p-1 h-full w-full flex flex-row rounded-lg bg-neutral-700">
+        <div class="h-full flex items-center justify-center">
           <p class="font-mono text-xl subpixel-antialiased font-bold tracking-wide">
             Math 56
           </p>
@@ -61,7 +61,7 @@
       </div>
     </div>
   </div>
-  <div class="p-2 flex flex-col-reverse sm:flex-row h-full w-full overflow-scroll bg-neutral-950">
+  <div class="sm:p-2 p-1 flex flex-col-reverse sm:flex-row h-full w-full overflow-scroll bg-neutral-950">
     <%# <div class="sm:w-1/4 m-2 p-2 sm:grow border-neutral-900 rounded-lg overflow-scroll bg-neutral-800">
       <div class="p-1 h-20 w-full rounded-lg bg-gradient-to-tl from-red-800 via-red-600 to-red-800">
         <div class="h-full w-full rounded-lg bg-black">
@@ -82,9 +82,9 @@
         <input id="alpha-slider" type="range" value="68.75" class="w-10/12 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-slate-100 m-4">
       </div>
     </div> %>
-    <div class="sm:w-4/12 p-2 h-full w-full overflow-scroll">
-      <div class="p-2 h-full w-full rounded-lg bg-gradient-to-tl overflow-scroll bg-neutral-800">
-        <div class="p-3 h-full w-full space-y-4 flex flex-col overflow-scroll rounded-lg bg-neutral-700 ">
+    <div class="sm:w-4/12 sm:p-2 p-1 h-full w-full overflow-scroll">
+      <div class="sm:p-2 p-1 h-full w-full rounded-lg bg-gradient-to-tl overflow-scroll bg-neutral-800">
+        <div class="sm:p-3 p-2 h-full w-full space-y-4 flex flex-col overflow-scroll rounded-lg bg-neutral-700 ">
           <div class="p-2 shrink w-full rounded-lg bg-neutral-900">
             <p class="block text-center mb-2 text-md font-medium font-mono text-gray-900 dark:text-white">
               Scalar Multiplication of Vectors
@@ -94,7 +94,8 @@
             <p class="block text-center mb-2 text-sm font-medium font-mono text-gray-900 dark:text-white">
               In the viewport, will walk through an example of a vector being multiplied by a scalar value.
               You can click and drag to spin the camera around the scene. To translate your camera, hold
-              shift, control, or command while dragging
+              shift, control, or command while dragging. You can also view this page on mobile!
+              Swipe to spin the camera and pinch to zoom/translate
             </p>
           </div>
           <div class="p-2 shrink w-full rounded-lg bg-neutral-500">
@@ -128,7 +129,7 @@
                 <span class="text-yellow-300 italic font-black">alpha</span> < 0<br>
                 </p>
               </div>
-              <div class="p-2 h-24 w-full rounded-lg bg-neutral-900">
+              <div class="sm:p-2 p-1 h-24 w-full rounded-lg bg-neutral-900">
                 <div class="py-2 h-full w-full rounded-lg bg-gradient-to-t from-yellow-950 via-yellow-600 to-yellow-900">
                   <label for="alpha-slider" class="block text-center mb-2 text-sm font-medium font-mono text-gray-900 dark:text-white">Change the alpha value</label>
                   <input id="alpha-slider" type="range" value="68.75" class="w-4/5 h-2 bg-neutral-900 rounded-lg appearance-none cursor-pointer dark:bg-neutral-100 m-4">
@@ -152,19 +153,19 @@
                   using the sliders below
                 </p>
               </div>
-              <div class="p-2 h-24 w-full rounded-lg bg-neutral-900">
+              <div class="sm:p-2 p-1 h-24 w-full rounded-lg bg-neutral-900">
                 <div class="py-2 h-full w-full rounded-lg bg-gradient-to-t from-red-950 via-red-600 to-red-900">
                   <label for="x-slider" class="block text-center mb-2 text-sm font-medium font-mono text-gray-900 dark:text-white">Change <span class="text-yellow-300 italic font-black">v</span>'s X coordinate</label>
                   <input id="x-slider" type="range" value="0" class="w-4/5 h-2 bg-neutral-900 rounded-lg appearance-none cursor-pointer dark:bg-neutral-100 m-4">
                 </div>
               </div>
-              <div class="p-2 h-24 w-full rounded-lg bg-neutral-900">
+              <div class="sm:p-2 p-1 h-24 w-full rounded-lg bg-neutral-900">
                 <div class="py-2 h-full w-full rounded-lg bg-gradient-to-t from-green-950 via-green-600 to-green-900">
                   <label for="y-slider" class="block text-center mb-2 text-sm font-medium font-mono text-gray-900 dark:text-white">Change <span class="text-yellow-300 italic font-black">v</span>'s Y coordinate</label>
                   <input id="y-slider" type="range" value="100" class="w-4/5 h-2 bg-neutral-900 rounded-lg appearance-none cursor-pointer dark:bg-neutral-100 m-4">
                 </div>
               </div>
-              <div class="p-2 h-24 w-full rounded-lg bg-neutral-900">
+              <div class="sm:p-2 p-1 h-24 w-full rounded-lg bg-neutral-900">
                 <div class="py-2 h-full w-full rounded-lg bg-gradient-to-t from-blue-950 via-blue-600 to-blue-900">
                   <label for="z-slider" class="block text-center mb-2 text-sm font-medium font-mono text-gray-900 dark:text-white">Change <span class="text-yellow-300 italic font-black">v</span>'s Z coordinate</label>
                   <input id="z-slider" type="range" value="100" class="w-4/5 h-2 bg-neutral-900 rounded-lg appearance-none cursor-pointer dark:bg-neutral-100 m-4">
@@ -178,8 +179,8 @@
               </div>
             </div>
           </div>
-          <div class="p-2 h-full w-full">
-            <div class="p-2 h-full w-full rounded-lg bg-gradient-to-tl from-red-700 via-green-700 to-blue-700">
+          <div class="sm:p-2 p-1 h-full w-full">
+            <div class="sm:p-2 p-1 h-full w-full rounded-lg bg-gradient-to-tl from-red-700 via-green-700 to-blue-700">
               <canvas class="h-full w-full rounded-lg" data-controller="game"></canvas>
             </div>
           </div>
