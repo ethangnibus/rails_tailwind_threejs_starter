@@ -4,6 +4,9 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { makeNoise2D, makeNoise3D } from "open-simplex-noise";
 import seedrandom from "seedrandom";
 import { throttle } from 'lodash-es';
+import { Line2 } from 'three/addons/lines/Line2.js';
+import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
+import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
 
 // Connects to data-controller="game"
 export default class extends Controller {
@@ -47,7 +50,7 @@ export default class extends Controller {
     this.renderer.setSize(this.canvasBack.clientWidth, this.canvasBack.clientHeight);
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableDamping = true;
-    this.controls.minDistance = 2;
+    this.controls.minDistance = 0.5;
     this.controls.maxDistance = 25;
   }
   initResizeHandler() {
@@ -173,7 +176,7 @@ export default class extends Controller {
   }
   makeSphere(material, position) {
     // Create a sphere geometry
-    const geometry = new THREE.SphereGeometry(0.1, 10, 10);
+    const geometry = new THREE.SphereGeometry(0.1, 64, 32);
     // Create a mesh by combining the geometry and material
     const sphere = new THREE.Mesh(geometry, material);
     sphere.position.set(position.x, position.y, position.z);
