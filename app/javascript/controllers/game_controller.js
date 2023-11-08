@@ -36,7 +36,6 @@ export default class extends Controller {
   initThree() {
     this.scene = new THREE.Scene();
     this.canvasBack = document.getElementById("canvasBack");
-    console.log("Canvas Back", this.canvasBack);
     this.camera = new THREE.PerspectiveCamera(75, this.canvasBack.clientWidth / this.canvasBack.clientHeight, 0.1, 1000);
     this.camera.position.set(3, 3, 2);
     const upDirection = new THREE.Vector3(0, 0, 1);
@@ -71,15 +70,15 @@ export default class extends Controller {
     // this.directionalLight = new THREE.DirectionalLight("#FF0000", 5.0);
     //this.directionalLight.position.set(0, 0, 0);
 
-    this.orangeLight = new THREE.PointLight( 0xFF000, 100, 100 );
+    this.orangeLight = new THREE.PointLight( 0xFFFFFF, 100, 100 );
     this.orangeLight.position.set( 0, 0, 5 );
     this.scene.add(this.orangeLight);
 
-    this.purpleLight = new THREE.PointLight( 0x00FF00, 100, 100 );
+    this.purpleLight = new THREE.PointLight( 0xFFFFFF, 100, 100 );
     this.purpleLight.position.set( 0, 5, 0 );
     this.scene.add(this.purpleLight);
 
-    this.yellowLight = new THREE.PointLight( 0x0000FF, 100, 100 );
+    this.yellowLight = new THREE.PointLight( 0xFFFFFF, 100, 100 );
     this.yellowLight.position.set( 5, 0, 0 );
     this.scene.add(this.yellowLight);
 
@@ -166,13 +165,26 @@ export default class extends Controller {
     }
   }
   makeLine(material, start, end) {
-    const points = [];
-    points.push( start );
-    points.push( end );
-    const geometry = new THREE.BufferGeometry().setFromPoints( points );
-    const line = new THREE.Line( geometry, material );
+    const points = [ 
+      start.x, start.y, start.z,
+      end.x, end.y, end.z
+    ];
+    const colors = [
+      255, 255, 255,
+      255, 255, 255
+    ];
+    const geometry = new LineGeometry();
+    geometry.setPositions( points );
+    geometry.setColors( colors );
+
+    material.resolution.set( this.canvasBack.clientWidth, this.canvasBack.clientHeight );
+
+    const line = new Line2( geometry, material );
+    line.computeLineDistances();
+		line.scale.set( 1, 1, 1 );
     this.scene.add( line );
     return line
+
   }
   makeSphere(material, position) {
     // Create a sphere geometry
@@ -189,15 +201,13 @@ export default class extends Controller {
     const start = new THREE.Vector3( 0, 0, 0);
     const end = new THREE.Vector3( -1, 1, 1);
     // Add event listeners to the sliders for X, Y, and Z
-    this.uLine = this.makeLine(this.uMaterial, start, end);
+    this.uLine = this.makeLine(this.uLineMaterial, start, end);
     this.uSphere = this.makeSphere(this.uMaterial, end);
     this.alpha = 1.5
     end.multiplyScalar(this.alpha);
-    this.uAlphaLine = this.makeLine(this.uAlphaMaterial, start, end);
+    this.uAlphaLine = this.makeLine(this.uAlphaLineMaterial, start, end);
     this.uAlphaSphere = this.makeSphere(this.uAlphaMaterial, end);
 
-
-    console.log("uLine", this.uLine);
     this.initSlider("x-slider", "x");
     this.initSlider("y-slider", "y");
     this.initSlider("z-slider", "z");
@@ -209,10 +219,12 @@ export default class extends Controller {
   }
   handleSliderChange(event, component) {
     const sliderValue = parseFloat(event.target.value);
-    const oldPositions = this.uLine.geometry.attributes.position.array
-    let x = oldPositions[3]
-    let y = oldPositions[4]
-    let z = oldPositions[5]
+    const oldPositions = this.uSphere.position;
+    console.log("oldPositions", oldPositions);
+    let x = oldPositions.x;
+    let y = oldPositions.y;
+    let z = oldPositions.z;
+    console.log("x, y, z", x, y, z);
 
     // Update the specific component (x, y, or z) based on the slider value
     if (component === "x") {
@@ -225,46 +237,118 @@ export default class extends Controller {
       this.alpha = (sliderValue / 12.5) - 4.0;
     }
 
-    // Set the new position of the end point for uLine
-    this.uLine.geometry.attributes.position.setXYZ(1, x, y, z);
+    // Set the new position of the end point for uLin
+    // const positions = this.uLine.geometry.attributes.position.array;
+    // positions[3] = x;  // Update the x coordinate
+    // positions[4] = y;  // Update the y coordinate
+    // positions[5] = z;  // Update the z coordinate
+
+    const points = [ 
+      0, 0, 0,
+      x, y, z
+    ];
+    const colors = [
+      255, 255, 255,
+      255, 255, 255
+    ];
+    // this.uLine.geometry = new LineGeometry();
+    this.uLine.geometry.setPositions( points );
+    this.uLine.geometry.setColors( colors );
     this.uLine.geometry.attributes.position.needsUpdate = true;
     this.uSphere.position.set(x, y, z);
 
     // Set the new position of the end point for uAlphaLine
-    x *= this.alpha
-    y *= this.alpha
-    z *= this.alpha
-    this.uAlphaLine.geometry.attributes.position.setXYZ(1, x, y, z);
+    x *= this.alpha;
+    y *= this.alpha;
+    z *= this.alpha;
+    points[3] = x;
+    points[4] = y;
+    points[5] = z;
+    // this.uAlphaLine.geometry.attributes.position.setXYZ(1, x, y, z);
+    this.uAlphaLine.geometry = new LineGeometry();
+    this.uAlphaLine.geometry.setPositions( points );
+    this.uAlphaLine.geometry.setColors( colors );
     this.uAlphaLine.geometry.attributes.position.needsUpdate = true;
     this.uAlphaSphere.position.set(x, y, z);
   }
 
   initMaterials() {
     // Axis Lines
-    this.xAxisMaterial = new THREE.LineBasicMaterial( {
-      color: "#FF0000",
+    // this.xAxisMaterial = new THREE.LineBasicMaterial( {
+    //   color: "#FF0000",
+    //   transparent: true,
+    //   opacity: 0.8,
+    // } );
+    this.xAxisMaterial = new LineMaterial( {
+      color: 0xFF0000,
+      linewidth: 2, // in world units with size attenuation, pixels otherwise
+      vertexColors: true,
       transparent: true,
-      opacity: 0.8,
+      opacity: 0.7,
+      //resolution:  // to be set by renderer, eventually
+      dashed: false,
+      alphaToCoverage: true,
     } );
-    this.yAxisMaterial = new THREE.LineBasicMaterial( {
-      color: "#00FF00",
+    // this.yAxisMaterial = new THREE.LineBasicMaterial( {
+    //   color: "#00FF00",
+    //   transparent: true,
+    //   opacity: 0.8,
+    // } );
+    this.yAxisMaterial = new LineMaterial( {
+      color: 0x00FF00,
+      linewidth: 2, // in world units with size attenuation, pixels otherwise
+      vertexColors: true,
       transparent: true,
-      opacity: 0.8,
+      opacity: 0.7,
+      //resolution:  // to be set by renderer, eventually
+      dashed: false,
+      alphaToCoverage: true,
     } );
-    this.zAxisMaterial = new THREE.LineBasicMaterial( {
-      color: "#0000FF",
+    // this.zAxisMaterial = new THREE.LineBasicMaterial( {
+    //   color: "#0000FF",
+    //   transparent: true,
+    //   opacity: 0.8,
+    // } );
+    this.zAxisMaterial = new LineMaterial( {
+      color: 0x0000FF,
+      linewidth: 2, // in world units with size attenuation, pixels otherwise
+      vertexColors: true,
       transparent: true,
-      opacity: 0.8,
+      opacity: 0.7,
+      //resolution:  // to be set by renderer, eventually
+      dashed: false,
+      alphaToCoverage: true,
     } );
-    this.planeLineMaterial = new THREE.LineBasicMaterial( {
-      color: "#808080",
+    // this.planeLineMaterial = new THREE.LineBasicMaterial( {
+    //   color: "#808080",
+    //   transparent: true,
+    //   opacity: 0.4,
+    // } );
+    this.planeLineMaterial = new LineMaterial( {
+      color: 0x808080,
+      linewidth: 1, // in world units with size attenuation, pixels otherwise
+      vertexColors: true,
       transparent: true,
-      opacity: 0.4,
+      opacity: 0.5,
+      //resolution:  // to be set by renderer, eventually
+      dashed: false,
+      alphaToCoverage: true,
     } );
-    this.hyperplaneLineMaterial = new THREE.LineBasicMaterial( {
-      color: "#808080",
+    // this.hyperplaneLineMaterial = new THREE.LineBasicMaterial( {
+    //   color: "#808080",
+    //   transparent: true,
+    //   opacity: 0.3,
+    // } );
+
+    this.hyperplaneLineMaterial = new LineMaterial( {
+      color: 0x808080,
+      linewidth: 1, // in world units with size attenuation, pixels otherwise
+      vertexColors: true,
       transparent: true,
-      opacity: 0.3,
+      opacity: 0.5,
+      //resolution:  // to be set by renderer, eventually
+      dashed: false,
+      alphaToCoverage: true,
     } );
 
     this.grassMaterial = new THREE.MeshStandardMaterial({
@@ -287,14 +371,36 @@ export default class extends Controller {
       emissive: "#777777",
       flatShading: false,
       emissiveIntensity: 0.5,
+      roughness: 0,
+      metalness: 0,
     });
+    this.uLineMaterial = new LineMaterial( {
+      color: 0x777777,
+      linewidth: 5, // in world units with size attenuation, pixels otherwise
+      vertexColors: true,
+      //resolution:  // to be set by renderer, eventually
+      dashed: false,
+      alphaToCoverage: true,
+    } );
     this.uAlphaMaterial = new THREE.MeshStandardMaterial({
-      color: "#9b7653",
+      color: "#800080",
       wireframe: false,
-      emissive: "#9b7653",
+      emissive: "#800080",
       flatShading: false,
       emissiveIntensity: 0.5,
+      roughness: 0,
+      metalness: 0,
     });
+    this.uAlphaLineMaterial = new LineMaterial( {
+      color: 0x800080,
+      linewidth: 2, // in world units with size attenuation, pixels otherwise
+      vertexColors: true,
+      //resolution:  // to be set by renderer, eventually
+      dashed: false,
+      alphaToCoverage: true,
+    } );
+    this.uLineMaterial.renderOrder = 1; 
+    this.uAlphaLineMaterial.renderOrder = 0;
     // Leaves material
     this.leavesMaterial = new THREE.MeshStandardMaterial({
       color: "#00ff00",
