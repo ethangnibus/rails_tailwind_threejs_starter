@@ -9,6 +9,7 @@ import { throttle } from 'lodash-es';
 export default class extends Controller {
   connect() {
     this.initThree();
+    this.initResizeHandler()
     this.initMaterials();
     this.init3dSubspace(10);
     this.initVectors();
@@ -43,9 +44,12 @@ export default class extends Controller {
   initResizeHandler() {
     const resizeUpdateInterval = 16; // 60 fps!
     const resizeHandler = throttle(() => {
-      this.nWidth = window.innerWidth;
-      this.nHeight = window.innerHeight;
-      console.log(`New Width: ${this.nWidth}, New Height: ${this.nHeight}`);
+      this.canvasBack = document.getElementById("canvasBack");
+      console.log("Canvas Back", this.canvasBack);
+      this.nWidth = this.canvasBack.clientWidth;
+      this.nHeight = this.canvasBack.clientHeight;
+      // console.log(this.element);
+      // console.log(`New Width: ${this.nWidth}, New Height: ${this.nHeight}`);
       this.renderer.setSize(this.nWidth, this.nHeight);
       this.camera.aspect = this.nWidth / this.nHeight;
       this.camera.updateProjectionMatrix();
