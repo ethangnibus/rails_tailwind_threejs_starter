@@ -15,6 +15,8 @@ export default class extends Controller {
     this.initVectors();
     // this.initResizeHandler();
 
+
+
     // this.geometry = new THREE.BoxGeometry();
 
     // this.scene.add(this.createCube(0, 0, 0, this.redMaterial));
@@ -30,7 +32,9 @@ export default class extends Controller {
 
   initThree() {
     this.scene = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera(75, this.element.clientWidth / this.element.clientHeight, 0.1, 1000);
+    this.canvasBack = document.getElementById("canvasBack");
+    console.log("Canvas Back", this.canvasBack);
+    this.camera = new THREE.PerspectiveCamera(75, this.canvasBack.clientWidth / this.canvasBack.clientHeight, 0.1, 1000);
     this.camera.position.set(3, 3, 2);
     const upDirection = new THREE.Vector3(0, 0, 1);
     this.camera.up.copy(upDirection);
@@ -38,14 +42,17 @@ export default class extends Controller {
       canvas: this.element,
       antialias: true
     });
-    this.renderer.setSize(this.element.clientWidth, this.element.clientHeight);
+    this.renderer.setPixelRatio( window.devicePixelRatio );
+    this.renderer.setClearColor( 0x000000, 0.0 );
+    this.renderer.setSize(this.canvasBack.clientWidth, this.canvasBack.clientHeight);
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    this.controls.enableDamping = true;
+    this.controls.minDistance = 2;
+    this.controls.maxDistance = 25;
   }
   initResizeHandler() {
     const resizeUpdateInterval = 16; // 60 fps!
     const resizeHandler = throttle(() => {
-      this.canvasBack = document.getElementById("canvasBack");
-      console.log("Canvas Back", this.canvasBack);
       this.nWidth = this.canvasBack.clientWidth;
       this.nHeight = this.canvasBack.clientHeight;
       // console.log(this.element);
