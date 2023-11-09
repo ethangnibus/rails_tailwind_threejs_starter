@@ -174,8 +174,8 @@ export default class extends Controller {
       end.x, end.y, end.z
     ];
     const colors = [
-      0.98, 0.98, 0.98,
-      0.98, 0.98, 0.98
+      2.3, 2.3, 2.3,
+      2.3, 2.3, 2.3
     ];
     const geometry = new LineGeometry();
     geometry.setPositions( points );
@@ -207,11 +207,42 @@ export default class extends Controller {
     // Add event listeners to the sliders for X, Y, and Z
     this.uLine = this.makeLine(this.uLineMaterial, start, end);
     this.uSphere = this.makeSphere(this.uMaterial, end);
+    this.uLineX = this.makeLine(
+      this.uLineAxisMaterial,
+      new THREE.Vector3(-1, 0, 0),
+      new THREE.Vector3(-1, 1, 0)
+    )
+    this.uLineY = this.makeLine(
+      this.uLineAxisMaterial,
+      new THREE.Vector3(0, 1, 0),
+      new THREE.Vector3(-1, 1, 0)
+    )
+    this.uLineZ = this.makeLine(
+      this.uLineAxisMaterial,
+      new THREE.Vector3(-1, 1, 0),
+      new THREE.Vector3(-1, 1, 1)
+    )
+
     this.alpha = 1.5
     end.multiplyScalar(this.alpha);
     start.set(-1, 1, 1);
     this.uAlphaLine = this.makeLine(this.uAlphaLineMaterial, start, end);
     this.uAlphaSphere = this.makeSphere(this.uAlphaMaterial, end);
+    this.uAlphaLineX = this.makeLine(
+      this.uAlphaLineAxisMaterial,
+      new THREE.Vector3(end.x, 0, 0),
+      new THREE.Vector3(end.x, end.y, 0)
+    )
+    this.uAlphaLineY = this.makeLine(
+      this.uAlphaLineAxisMaterial,
+      new THREE.Vector3(0, end.y, 0),
+      new THREE.Vector3(end.x, end.y, 0)
+    )
+    this.uAlphaLineZ = this.makeLine(
+      this.uAlphaLineAxisMaterial,
+      new THREE.Vector3(end.x, end.y, 0),
+      new THREE.Vector3(end.x, end.y, end.z)
+    )
 
     this.initSlider("x-slider", "x");
     this.initSlider("y-slider", "y");
@@ -259,14 +290,47 @@ export default class extends Controller {
       x, y, z
     ];
     const colors = [
-      0.98, 0.98, 0.98,
-      0.98, 0.98, 0.98
+      2.3, 2.3, 2.3,
+      2.3, 2.3, 2.3
     ];
     // this.uLine.geometry = new LineGeometry();
     this.uLine.geometry.setPositions( points );
     this.uLine.geometry.setColors( colors );
     this.uLine.geometry.attributes.position.needsUpdate = true;
     this.uSphere.position.set(x, y, z);
+
+    points[0] = 0;
+    points[1] = y;
+    points[2] = 0;
+    points[3] = x;
+    points[4] = y;
+    points[5] = 0;
+    this.uLineX.geometry.setPositions( points );
+    this.uLineX.geometry.setColors( colors );
+    this.uLineX.computeLineDistances();
+    this.uLineX.geometry.attributes.position.needsUpdate = true;
+
+    points[0] = x;
+    points[1] = 0;
+    points[2] = 0;
+    points[3] = x;
+    points[4] = y;
+    points[5] = 0;
+    this.uLineY.geometry.setPositions( points );
+    this.uLineY.geometry.setColors( colors );
+    this.uLineY.computeLineDistances();
+    this.uLineY.geometry.attributes.position.needsUpdate = true;
+
+    points[0] = x;
+    points[1] = y;
+    points[2] = 0;
+    points[3] = x;
+    points[4] = y;
+    points[5] = z;
+    this.uLineZ.geometry.setPositions( points );
+    this.uLineZ.geometry.setColors( colors );
+    this.uLineZ.computeLineDistances();
+    this.uLineZ.geometry.attributes.position.needsUpdate = true;
 
 
     // Set the new position of the end point for uAlphaLine
@@ -297,6 +361,39 @@ export default class extends Controller {
     this.uAlphaLine.geometry.setColors( colors );
     this.uAlphaLine.geometry.attributes.position.needsUpdate = true;
     this.uAlphaSphere.position.set(xAlpha, yAlpha, zAlpha);
+
+    points[0] = 0;
+    points[1] = yAlpha;
+    points[2] = 0;
+    points[3] = xAlpha;
+    points[4] = yAlpha;
+    points[5] = 0;
+    this.uAlphaLineX.geometry.setPositions( points );
+    this.uAlphaLineX.geometry.setColors( colors );
+    this.uAlphaLineX.computeLineDistances();
+    this.uAlphaLineX.geometry.attributes.position.needsUpdate = true;
+
+    points[0] = xAlpha;
+    points[1] = 0;
+    points[2] = 0;
+    points[3] = xAlpha;
+    points[4] = yAlpha;
+    points[5] = 0;
+    this.uAlphaLineY.geometry.setPositions( points );
+    this.uAlphaLineY.geometry.setColors( colors );
+    this.uAlphaLineY.computeLineDistances();
+    this.uAlphaLineY.geometry.attributes.position.needsUpdate = true;
+
+    points[0] = xAlpha;
+    points[1] = yAlpha;
+    points[2] = 0;
+    points[3] = xAlpha;
+    points[4] = yAlpha;
+    points[5] = zAlpha;
+    this.uAlphaLineZ.geometry.setPositions( points );
+    this.uAlphaLineZ.geometry.setColors( colors );
+    this.uAlphaLineZ.computeLineDistances();
+    this.uAlphaLineZ.geometry.attributes.position.needsUpdate = true;
   }
 
   initMaterials() {
@@ -403,10 +500,21 @@ export default class extends Controller {
     });
     this.uLineMaterial = new LineMaterial( {
       color: 0xc99400,
-      linewidth: 4, // in world units with size attenuation, pixels otherwise
+      linewidth: 3, // in world units with size attenuation, pixels otherwise
       vertexColors: true,
       //resolution:  // to be set by renderer, eventually
       dashed: false,
+      alphaToCoverage: true,
+    } );
+    this.uLineAxisMaterial = new LineMaterial( {
+      color: 0xc99400,
+      linewidth: 2, // in world units with size attenuation, pixels otherwise
+      vertexColors: true,
+      //resolution:  // to be set by renderer, eventually
+      dashed: true,
+      dashSize: 0.15,
+      gapSize: 0.15,
+      dashScale: 1,
       alphaToCoverage: true,
     } );
     this.uAlphaMaterial = new THREE.MeshStandardMaterial({
@@ -420,10 +528,21 @@ export default class extends Controller {
     });
     this.uAlphaLineMaterial = new LineMaterial( {
       color: 0x800080,
-      linewidth: 4, // in world units with size attenuation, pixels otherwise
+      linewidth: 3, // in world units with size attenuation, pixels otherwise
       vertexColors: true,
       //resolution:  // to be set by renderer, eventually
       dashed: false,
+      alphaToCoverage: true,
+    } );
+    this.uAlphaLineAxisMaterial = new LineMaterial( {
+      color: 0x800080,
+      linewidth: 2, // in world units with size attenuation, pixels otherwise
+      vertexColors: true,
+      //resolution:  // to be set by renderer, eventually
+      dashed: true,
+      dashSize: 0.15,
+      gapSize: 0.15,
+      dashScale: 1,
       alphaToCoverage: true,
     } );
     this.uLineMaterial.renderOrder = 1; 
