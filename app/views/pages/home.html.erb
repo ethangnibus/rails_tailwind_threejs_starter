@@ -32,72 +32,79 @@
               Notice there are two spheres in the scene. These spheres represent 3-dimensional
               vectors. The sphere closer to the origin is called <span class="italic font-black text-yellow-300">v</span>
               and the other sphere represents <span class="italic font-black text-yellow-300">v</span> after it has
-              been multiplied by some scalar <span class="text-yellow-300 italic font-black">alpha</span>. Let's call this
-              other vector <span class="italic font-black text-yellow-300">w</span>
+              been multiplied by some scalar <span class="text-fuchsia-200 italic font-black">alpha</span>. Let's call this
+              other vector <span class="italic font-black text-fuchsia-400">w</span>
             </p>
           </div>
           <div class="p-2 shrink w-full rounded-lg bg-neutral-500">
             <p class="block text-center mb-2 text-sm font-medium font-mono text-gray-900 dark:text-white">
-              By changing the value of <span class="text-yellow-300 italic font-black">alpha</span>,
-              we are able to see how the resultant vector's <span class="italic font-black text-yellow-300">w</span>
-              coordinates change. Try editing <span class="text-yellow-300 italic font-black">alpha</span>'s value
+              By changing the value of <span class="text-fuchsia-200 italic font-black">alpha</span>,
+              we are able to see how the resultant vector's <span class="italic font-black text-fuchsia-400">w</span>
+              coordinates change. Try editing <span class="text-fuchsia-200 italic font-black">alpha</span>'s value
               by moving the slider below. Observe what happens in the following cases:
               <br>
               <br>
             </p>
             <p class="block text-left ml-2mb-2 text-sm font-medium font-mono text-gray-900 dark:text-white">
               <span class="text-black">A)</span>
-              <span class="text-yellow-300 italic font-black">alpha</span> &gt; 1<br>
+              <span class="text-fuchsia-200 italic font-black">alpha</span> &gt; 1<br>
               <span class="text-black">B)</span>
-              <span class="text-yellow-300 italic font-black">alpha</span> = 1<br>
+              <span class="text-fuchsia-200 italic font-black">alpha</span> = 1<br>
               <span class="text-black">C)</span> 0 &lt;
-              <span class="text-yellow-300 italic font-black">alpha</span> &lt; 1<br>
+              <span class="text-fuchsia-200 italic font-black">alpha</span> &lt; 1<br>
               <span class="text-black">D)</span>
-              <span class="text-yellow-300 italic font-black">alpha</span> = 0<br>
+              <span class="text-fuchsia-200 italic font-black">alpha</span> = 0<br>
               <span class="text-black">E)</span>
-              <span class="text-yellow-300 italic font-black">alpha</span> &lt; 0<br>
+              <span class="text-fuchsia-200 italic font-black">alpha</span> &lt; 0<br>
             </p>
           </div>
-          <div class="sm:p-2 p-1 h-24 w-full rounded-lg bg-neutral-900">
-            <div class="py-2 h-full w-full rounded-lg bg-gradient-to-t from-yellow-950 via-yellow-600 to-yellow-900">
-              <label for="alpha-slider" class="block text-center mb-2 text-sm font-medium font-mono text-gray-900 dark:text-white">Change the alpha value</label>
+          <div class="sm:p-2 p-1 h-30 w-full rounded-lg bg-neutral-900">
+            <div class="py-2 h-full w-full rounded-lg flex flex-col items-center justify-center bg-gradient-to-t from-fuchsia-950 via-fuchsia-600 to-fuchsia-900">
+              <label for="alpha-slider" class="block text-center mb-2 text-sm font-medium font-mono text-gray-900 dark:text-white">Change the <span class="text-fuchsia-200 italic font-black">alpha</span> value</label>
               <input id="alpha-slider" type="range" value="68.75" class="w-4/5 h-2 bg-neutral-900 rounded-lg appearance-none cursor-pointer dark:bg-neutral-100 m-4">
+              <span id="alpha-slider-value" class="text-center text-sm text-gray-900 dark:text-white">1.5</span>
             </div>
           </div>
           <div class="p-2 shrink w-full rounded-lg bg-neutral-500">
             <p class="block text-center mb-2 text-sm font-medium font-mono text-gray-900 dark:text-white">
-              Notice that no matter what value of <span class="text-yellow-300 italic font-black">alpha</span>
+              Notice that no matter what value of <span class="text-fuchsia-200 italic font-black">alpha</span>
               we choose, we can draw a straight line through
               <span class="text-yellow-300 italic font-black">v</span>,
-              <span class="text-yellow-300 italic font-black">w</span>, and the origin. Because of this,
+              <span class="text-fuchsia-400 italic font-black">w</span>, and the origin. Because of this,
               we call <span class="text-yellow-300 italic font-black">v</span> and
-              <span class="text-yellow-300 italic font-black">w</span> colinear, meaning that they
+              <span class="text-fuchsia-400 italic font-black">w</span> colinear, meaning that they
               will always fall along the same line when multiplied by a scalar value.
             </p>
           </div>
           <div class="p-2 shrink w-full rounded-lg bg-neutral-500">
             <p class="block text-center mb-2 text-sm font-medium font-mono text-gray-900 dark:text-white">
               To see this in further detail, try editing
-              <span class="text-yellow-300 italic font-black">v</span>'s X, Y, Z coordinates
+              <span class="text-yellow-300 italic font-black">v</span>'s
+              <span class="text-red-200 italic font-black">X</span>,
+              <span class="text-green-200 italic font-black">Y</span>,
+              <span class="text-blue-200 italic font-black">Z</span>, coordinates
               using the sliders below
             </p>
           </div>
-          <div class="sm:p-2 p-1 h-24 w-full rounded-lg bg-neutral-900">
-            <div class="py-2 h-full w-full rounded-lg bg-gradient-to-t from-red-950 via-red-600 to-red-900">
-              <label for="x-slider" class="block text-center mb-2 text-sm font-medium font-mono text-gray-900 dark:text-white">Change <span class="text-yellow-300 italic font-black">v</span>'s X coordinate</label>
+          <div class="sm:p-2 p-1 h-30 w-full rounded-lg bg-neutral-900">
+            <div class="py-2 h-full w-full flex flex-col items-center justify-center rounded-lg bg-gradient-to-t from-red-950 via-red-600 to-red-900">
+              <label for="x-slider" class="block text-center mb-2 text-sm font-medium font-mono text-gray-900 dark:text-white">Change <span class="text-yellow-300 italic font-black">v</span>'s <span class="text-red-200 italic font-black">X</span> coordinate</label>
               <input id="x-slider" type="range" value="0" class="w-4/5 h-2 bg-neutral-900 rounded-lg appearance-none cursor-pointer dark:bg-neutral-100 m-4">
+              <span id="x-slider-value" class="text-center text-sm text-gray-900 dark:text-white">-1</span>
             </div>
           </div>
-          <div class="sm:p-2 p-1 h-24 w-full rounded-lg bg-neutral-900">
-            <div class="py-2 h-full w-full rounded-lg bg-gradient-to-t from-green-950 via-green-600 to-green-900">
-              <label for="y-slider" class="block text-center mb-2 text-sm font-medium font-mono text-gray-900 dark:text-white">Change <span class="text-yellow-300 italic font-black">v</span>'s Y coordinate</label>
+          <div class="sm:p-2 p-1 h-30 w-full rounded-lg bg-neutral-900">
+            <div class="py-2 h-full w-full flex flex-col items-center justify-center rounded-lg bg-gradient-to-t from-green-950 via-green-600 to-green-900">
+              <label for="y-slider" class="block text-center mb-2 text-sm font-medium font-mono text-gray-900 dark:text-white">Change <span class="text-yellow-300 italic font-black">v</span>'s <span class="text-green-200 italic font-black">Y</span> coordinate</label>
               <input id="y-slider" type="range" value="100" class="w-4/5 h-2 bg-neutral-900 rounded-lg appearance-none cursor-pointer dark:bg-neutral-100 m-4">
+              <span id="y-slider-value" class="text-center text-sm text-gray-900 dark:text-white">1</span>
             </div>
           </div>
-          <div class="sm:p-2 p-1 h-24 w-full rounded-lg bg-neutral-900">
-            <div class="py-2 h-full w-full rounded-lg bg-gradient-to-t from-blue-950 via-blue-600 to-blue-900">
-              <label for="z-slider" class="block text-center mb-2 text-sm font-medium font-mono text-gray-900 dark:text-white">Change <span class="text-yellow-300 italic font-black">v</span>'s Z coordinate</label>
+          <div class="sm:p-2 p-1 h-30 w-full rounded-lg bg-neutral-900">
+            <div class="py-2 h-full w-full flex flex-col items-center justify-center rounded-lg bg-gradient-to-t from-blue-950 via-blue-600 to-blue-900">
+              <label for="z-slider" class="block text-center mb-2 text-sm font-medium font-mono text-gray-900 dark:text-white">Change <span class="text-yellow-300 italic font-black">v</span>'s <span class="text-blue-200 italic font-black">Z</span> coordinate</label>
               <input id="z-slider" type="range" value="100" class="w-4/5 h-2 bg-neutral-900 rounded-lg appearance-none cursor-pointer dark:bg-neutral-100 m-4">
+              <span id="z-slider-value" class="text-center text-sm text-gray-900 dark:text-white">1</span>
             </div>
           </div>
           <div class="p-2 shrink w-full rounded-lg bg-neutral-500">

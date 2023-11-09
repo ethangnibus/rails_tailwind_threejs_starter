@@ -18,7 +18,11 @@ export default class extends Controller {
     this.initVectors();
     // this.initResizeHandler();
 
+    // const size = 10;
+    // const divisions = 10;
 
+    // const gridHelper = new THREE.GridHelper( size, divisions );
+    // this.scene.add( gridHelper );
 
     // this.geometry = new THREE.BoxGeometry();
 
@@ -170,8 +174,8 @@ export default class extends Controller {
       end.x, end.y, end.z
     ];
     const colors = [
-      255, 255, 255,
-      255, 255, 255
+      0.98, 0.98, 0.98,
+      0.98, 0.98, 0.98
     ];
     const geometry = new LineGeometry();
     geometry.setPositions( points );
@@ -205,6 +209,7 @@ export default class extends Controller {
     this.uSphere = this.makeSphere(this.uMaterial, end);
     this.alpha = 1.5
     end.multiplyScalar(this.alpha);
+    start.set(-1, 1, 1);
     this.uAlphaLine = this.makeLine(this.uAlphaLineMaterial, start, end);
     this.uAlphaSphere = this.makeSphere(this.uAlphaMaterial, end);
 
@@ -220,21 +225,27 @@ export default class extends Controller {
   handleSliderChange(event, component) {
     const sliderValue = parseFloat(event.target.value);
     const oldPositions = this.uSphere.position;
-    console.log("oldPositions", oldPositions);
+    // console.log("oldPositions", oldPositions);
     let x = oldPositions.x;
     let y = oldPositions.y;
     let z = oldPositions.z;
-    console.log("x, y, z", x, y, z);
+    // console.log("x, y, z", x, y, z);
 
     // Update the specific component (x, y, or z) based on the slider value
+    const sliderValueDisplay = document.getElementById(component.concat("-slider-value"));
+    // console.log(sliderValueDisplay);
     if (component === "x") {
       x = (sliderValue  / 50.0) - 1.0;
+      sliderValueDisplay.textContent = `${Math.round(100*x)/100}`
     } else if (component === "y") {
       y = (sliderValue  / 50.0) - 1.0;
+      sliderValueDisplay.textContent = `${Math.round(100*y)/100}`
     } else if (component === "z") {
       z = (sliderValue  / 50.0) - 1.0;
+      sliderValueDisplay.textContent = `${Math.round(100*z)/100}`
     } else if (component === "alpha") {
       this.alpha = (sliderValue / 12.5) - 4.0;
+      sliderValueDisplay.textContent = `${Math.round(100*this.alpha)/100}`
     }
 
     // Set the new position of the end point for uLin
@@ -248,8 +259,8 @@ export default class extends Controller {
       x, y, z
     ];
     const colors = [
-      255, 255, 255,
-      255, 255, 255
+      0.98, 0.98, 0.98,
+      0.98, 0.98, 0.98
     ];
     // this.uLine.geometry = new LineGeometry();
     this.uLine.geometry.setPositions( points );
@@ -257,19 +268,35 @@ export default class extends Controller {
     this.uLine.geometry.attributes.position.needsUpdate = true;
     this.uSphere.position.set(x, y, z);
 
+
     // Set the new position of the end point for uAlphaLine
-    x *= this.alpha;
-    y *= this.alpha;
-    z *= this.alpha;
-    points[3] = x;
-    points[4] = y;
-    points[5] = z;
+    let xAlpha = x * this.alpha;
+    let yAlpha = y * this.alpha;
+    let zAlpha = z * this.alpha;
+    points[3] = xAlpha;
+    points[4] = yAlpha;
+    points[5] = zAlpha;
+
+    // Set line start depending on alpha
+    if (this.alpha >= 1) {
+      points[0] = x;
+      points[1] = y;
+      points[2] = z;
+    } else if (this.alpha <= 0) {
+      points[0] = 0;
+      points[1] = 0;
+      points[2] = 0;
+    } else {
+      points[0] = xAlpha;
+      points[1] = yAlpha;
+      points[2] = zAlpha;
+    }
     // this.uAlphaLine.geometry.attributes.position.setXYZ(1, x, y, z);
     this.uAlphaLine.geometry = new LineGeometry();
     this.uAlphaLine.geometry.setPositions( points );
     this.uAlphaLine.geometry.setColors( colors );
     this.uAlphaLine.geometry.attributes.position.needsUpdate = true;
-    this.uAlphaSphere.position.set(x, y, z);
+    this.uAlphaSphere.position.set(xAlpha, yAlpha, zAlpha);
   }
 
   initMaterials() {
@@ -282,7 +309,7 @@ export default class extends Controller {
     this.xAxisMaterial = new LineMaterial( {
       color: 0xFF0000,
       linewidth: 2, // in world units with size attenuation, pixels otherwise
-      vertexColors: true,
+      vertexColors: false,
       transparent: true,
       opacity: 0.7,
       //resolution:  // to be set by renderer, eventually
@@ -297,7 +324,7 @@ export default class extends Controller {
     this.yAxisMaterial = new LineMaterial( {
       color: 0x00FF00,
       linewidth: 2, // in world units with size attenuation, pixels otherwise
-      vertexColors: true,
+      vertexColors: false,
       transparent: true,
       opacity: 0.7,
       //resolution:  // to be set by renderer, eventually
@@ -312,7 +339,7 @@ export default class extends Controller {
     this.zAxisMaterial = new LineMaterial( {
       color: 0x0000FF,
       linewidth: 2, // in world units with size attenuation, pixels otherwise
-      vertexColors: true,
+      vertexColors: false,
       transparent: true,
       opacity: 0.7,
       //resolution:  // to be set by renderer, eventually
@@ -327,7 +354,7 @@ export default class extends Controller {
     this.planeLineMaterial = new LineMaterial( {
       color: 0x808080,
       linewidth: 1, // in world units with size attenuation, pixels otherwise
-      vertexColors: true,
+      vertexColors: false,
       transparent: true,
       opacity: 0.5,
       //resolution:  // to be set by renderer, eventually
@@ -343,7 +370,7 @@ export default class extends Controller {
     this.hyperplaneLineMaterial = new LineMaterial( {
       color: 0x808080,
       linewidth: 1, // in world units with size attenuation, pixels otherwise
-      vertexColors: true,
+      vertexColors: false,
       transparent: true,
       opacity: 0.5,
       //resolution:  // to be set by renderer, eventually
@@ -366,17 +393,17 @@ export default class extends Controller {
       emissiveIntensity: 0.5,
     });
     this.uMaterial = new THREE.MeshStandardMaterial({
-      color: "#777777",
+      color: "#c99400",
       wireframe: false,
-      emissive: "#777777",
+      emissive: "#c99400",
       flatShading: false,
       emissiveIntensity: 0.5,
       roughness: 0,
       metalness: 0,
     });
     this.uLineMaterial = new LineMaterial( {
-      color: 0x777777,
-      linewidth: 5, // in world units with size attenuation, pixels otherwise
+      color: 0xc99400,
+      linewidth: 4, // in world units with size attenuation, pixels otherwise
       vertexColors: true,
       //resolution:  // to be set by renderer, eventually
       dashed: false,
@@ -393,7 +420,7 @@ export default class extends Controller {
     });
     this.uAlphaLineMaterial = new LineMaterial( {
       color: 0x800080,
-      linewidth: 2, // in world units with size attenuation, pixels otherwise
+      linewidth: 4, // in world units with size attenuation, pixels otherwise
       vertexColors: true,
       //resolution:  // to be set by renderer, eventually
       dashed: false,
